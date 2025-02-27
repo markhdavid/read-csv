@@ -51,13 +51,13 @@
       (make-array '(7 6 2) 
        :initial-contents
        ;;WHITE,         RETURN,       LF,           QUOTE,        SEP,          OTHER           ;; STATE 
-       `(((noop ,start) (ship ,retur) (ship ,done!) (noop ,myquo) (next ,start) (addc ,unquo))  ;; start
-	 ((noop ,start) (ship ,retur) (noop ,done!) (noop ,start) (next ,start) (addc ,unquo))  ;; return seen
-	 ((addc ,unquo) (ship ,retur) (ship ,done!) (addc ,unquo) (next ,start) (addc ,unquo))  ;; unquoted text
-	 ((addc ,myquo) (noop ,q+ret) (addl ,myquo) (noop ,q+quo) (addc ,myquo) (addc ,myquo))  ;; in-quote
-	 ((addc ,myquo) (noop ,q+ret) (addl ,myquo) (noop ,q+quo) (addc ,myquo) (addc ,myquo))  ;; in-quote, seen return
-	 ((noop ,q+q&w) (ship ,retur) (ship ,done!) (addc ,myquo) (next ,start) (addc ,unquo))  ;; in-quote, seen quote
-	 ((noop ,q+q&w) (ship ,retur) (ship ,done!) (addc ,myquo) (next ,start) (addc ,unquo)))))) ;; in quote, seen quote, now whitespace
+       `(((noop ,start) (ship ,retur) (ship ,done!) (noop ,myquo) (next ,start) (addc ,unquo))  ;; 0 start
+	 ((noop ,start) (ship ,retur) (noop ,done!) (noop ,start) (next ,start) (addc ,unquo))  ;; 1 return seen
+	 ((addc ,unquo) (ship ,retur) (ship ,done!) (addc ,unquo) (next ,start) (addc ,unquo))  ;; 2 unquoted text
+	 ((addc ,myquo) (noop ,q+ret) (addl ,myquo) (noop ,q+quo) (addc ,myquo) (addc ,myquo))  ;; 3 in-quote
+	 ((addc ,myquo) (noop ,q+ret) (addl ,myquo) (noop ,q+quo) (addc ,myquo) (addc ,myquo))  ;; 4 in-quote, seen return
+	 ((noop ,q+q&w) (ship ,retur) (ship ,done!) (addc ,myquo) (next ,start) (addc ,unquo))  ;; 5 in-quote, seen quote
+	 ((noop ,q+q&w) (ship ,retur) (ship ,done!) (addc ,myquo) (next ,start) (addc ,unquo)))))) ;; 6 in quote, seen quote, now whitespace
 
 (declaim (inline char-class))
 (defun char-class (sep char)
@@ -103,9 +103,6 @@
  
 (defun parse-csv (stream  &optional (sep #\,))
   "Read CSV data from a stream until end-of-file is encountered."
-  ;; (loop for (line end-p) = (multiple-value-list (read-csv stream sep nil :eof))
-  ;;       unless (eq line :eof) collect line
-  ;;         until end-p)
   (loop with line
         with end-p
         do (multiple-value-setq (line end-p)
